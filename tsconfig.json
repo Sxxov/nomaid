@@ -3,9 +3,7 @@
 	"include": [
 		"src/**/*", 
 		"types/**/*", 
-		"**/.eslintrc.cjs",
-		"**/.prettierrc.cjs",
-		"**/*.config.js",
+		"**/.*rc.cjs",
 		"**/*.config.cjs",
 	],
 	"exclude": [

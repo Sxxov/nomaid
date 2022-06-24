@@ -253,6 +253,8 @@ const CommonOverrideRules = {
 		'error',
 		{ path: 'always', types: 'never', lib: 'always' },
 	],
+	'@typescript-eslint/no-duplicate-enum-values': 'off',
+	'new-cap': 'off',
 };
 
 module.exports = {
@@ -321,7 +323,7 @@ module.exports = {
 		ecmaVersion: 12,
 		tsconfigRootDir: __dirname,
 		project: ['./tsconfig.json'],
-		extraFileExtensions: ['.cjs', '.svelte'],
+		extraFileExtensions: ['.svelte'],
 	},
 	env: {
 		node: false,

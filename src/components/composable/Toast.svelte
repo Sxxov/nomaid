@@ -1,24 +1,20 @@
 <script lang="ts">
 	import { CssUtility } from '../../resources/utilities';
 	import Hint from './Hint.svelte';
-	import { dropIn, dropOut } from '../../core/transitioner';
+	import { dropIn, dropOut } from '../../core/transitioner/Transitioner';
 	import SvgButton from './buttons/SvgButton.svelte';
 	import Spacer from './Spacer.svelte';
-	import { LevelColour } from './common/enums/Level';
-	import type { ToastItem } from './toast/ToastItem';
+	import { LevelColours } from './common/enums/LevelColours';
+	import type { Toast } from './toast/Toast';
 	import { clear } from '!i/twotone::clear';
 
-	export let toasts: ToastItem[] = [];
+	export let toasts: Toast[] = [];
 
 	const scheduledUids: string[] = [];
 
-	if (toasts == null) {
-		toasts = [];
+	$: for (const toast of toasts) {
+		scheduleDismiss(toast.uid, toast.duration);
 	}
-
-	$: toasts.forEach((toast) => {
-		scheduleDismiss(toast.uid!, toast.duration!);
-	});
 
 	function dismiss(uid: string) {
 		toasts.splice(
@@ -52,12 +48,7 @@
 			<div
 				class="content"
 				style="
-					--colour-toast: {CssUtility.parse(
-					LevelColour[
-						// @ts-expect-error !!!!
-						toast.level
-					],
-				)}
+					--colour-toast: {CssUtility.parse(LevelColours[toast.level])}
 				"
 				in:dropIn
 				out:dropOut
@@ -76,7 +67,7 @@
 					padding="4px 8px"
 					height={32}
 					on:click={() => {
-						dismiss(String(toast.uid));
+						dismiss(toast.uid);
 					}}
 				/>
 			</div>
@@ -111,7 +102,5 @@
 		width: max-content;
 		max-width: 25vw;
 		max-width: min(400px, calc(61vw));
-
-		/* margin-top: var(--padding); */
 	}
 </style>

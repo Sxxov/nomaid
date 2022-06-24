@@ -1,165 +1,176 @@
+<script context="module" lang="ts">
+	const LOADING_ITEM = Dropdown.from({
+		label: true,
+		svg: border_clear,
+		text: 'Loading, give me a bit...',
+	});
+	const NO_ITEMS_ITEM = Dropdown.from({
+		label: true,
+		svg: clear,
+		text: 'No items found',
+	});
+</script>
+
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { dropIn, dropOut } from '../../core/transitioner';
-	import Input from './Input.svelte';
-	import { CssUtility } from '../../resources/utilities';
-	import type { Css } from '../../resources/utilities';
-	import { UnexpectedValueError } from '../../resources/errors';
-	import SvgButton from './buttons/SvgButton.svelte';
-	import { DropdownItem } from './dropdown/DropdownItem';
 	import {
 		border_clear,
 		clear,
-		keyboard_arrow_up,
 		keyboard_arrow_down,
+		keyboard_arrow_up,
 	} from '!i/twotone::border_clear,clear,keyboard_arrow_up,keyboard_arrow_down';
+	import { dropIn, dropOut } from '../../core/transitioner/Transitioner';
+	import type { Css } from '../../resources/utilities';
+	import { CssUtility } from '../../resources/utilities';
+	import SvgButton from './buttons/SvgButton.svelte';
+	import { Dropdown } from './dropdown/Dropdown';
+	import Input from './Input.svelte';
 
 	export let isActive = false;
-	export let items: DropdownItem[] = [];
+	export let items: (Promise<Dropdown> | Dropdown)[] = [];
 	export let height: Css = 56;
 	export let width: Css = 'auto';
 	export let itemsHeight: Css = 192;
 	export let label = '...';
-	export let selectedItem: DropdownItem | undefined = undefined;
-	export let selectedId: string | undefined = undefined;
-	export let value = '';
-	export let isPending = false;
+	export let chosenItem: Dropdown | undefined = undefined;
+	export let chosenId: string | undefined = undefined;
 
-	const LOADING_ITEM = DropdownItem.from({
-		label: true,
-		svg: border_clear,
-		text: 'Loading, give me a bit...',
-		id: '...',
-	});
-	const NO_ITEMS_ITEM = DropdownItem.from({
-		label: true,
-		svg: clear,
-		text: 'No items found',
-		id: '404',
-	});
+	const resolvedItems: Dropdown[] = [];
+	let isBlurCancelled = false;
+	let searchPhrase = '';
+	let currItems: Dropdown[] = resolvedItems;
+	let currIndexOfSearchPhrases: number[] = [];
 
-	let currentItems = items;
-	let filteredItems = items;
-	let input: any;
-	// eslint-disable-next-line prefer-const
-	let isButtonFocused = false;
+	for (let i = 0, l = items.length; i < l; ++i) {
+		const item = items[i];
 
-	$: if (selectedId != null && selectedItem == null) {
-		const selectedItem = items.find((item) => item.id === selectedId);
-
-		if (selectedItem == null) {
-			throw new UnexpectedValueError(
-				"Attempted to select an item that hasn't been registered",
-			);
-		}
-	}
-
-	$: if (selectedItem != null) {
-		onSelect(selectedItem);
-	}
-
-	$: buttonProps = {
-		svg: isActive ? keyboard_arrow_up : keyboard_arrow_down,
-		isFocused: isButtonFocused,
-	};
-
-	// when a value is gotten in `items`, set `isPending` to false
-	$: items != null && items.length > 0 && isPending && (isPending = false);
-
-	onMount(() => {
-		input.onFocus = () => {
-			value = '';
-
-			isActive = true;
-		};
-
-		input.onBlur = () => {
-			scheduleBlur();
-
-			// for when user clicks outside of dropdown
-			window.addEventListener('click', function runScheduledBlurOnce() {
-				runScheduledBlur();
-
-				window.removeEventListener('click', runScheduledBlurOnce);
+		if (item instanceof Promise) {
+			resolvedItems[i] = LOADING_ITEM;
+			void item.then((v) => {
+				resolvedItems[i] = v;
 			});
-		};
-	});
-
-	// filter items according to item text
-	$: filteredItems = items.filter((item) =>
-		item.text.toLowerCase().includes(value.toLowerCase()),
-	);
-
-	$: if (filteredItems.length === 0) {
-		filteredItems = [isPending ? LOADING_ITEM : NO_ITEMS_ITEM];
+		} else {
+			resolvedItems[i] = item;
+		}
 	}
 
-	// if `filteredItems` differ from `currentItems`
-	$: if (
-		filteredItems.length !== currentItems.length ||
-		filteredItems.some(
-			(filteredItem, i) => currentItems[i] !== filteredItem,
-		)
-	) {
-		currentItems = filteredItems;
-	}
+	// sort items according to search phrase text
+	$: {
+		const matchingItems: Dropdown[] = [];
+		const restItems: Dropdown[] = [];
+		const indexOfSearchPhrases: number[] = [];
 
-	function onSelect(item: DropdownItem | undefined) {
-		if (item == null) {
-			return;
+		for (const item of resolvedItems) {
+			const indexOfSearchPhrase = item.text
+				.toLowerCase()
+				.indexOf(searchPhrase.toLowerCase());
+
+			if (indexOfSearchPhrase >= 0) {
+				indexOfSearchPhrases.push(indexOfSearchPhrase);
+				matchingItems.push(item);
+			} else {
+				restItems.push(item);
+			}
 		}
 
+		currIndexOfSearchPhrases = indexOfSearchPhrases;
+		currItems = [...matchingItems, ...restItems];
+	}
+
+	$: if (currItems.length <= 0) {
+		currItems = [getPlaceholderItem(isPending)];
+	}
+
+	$: isPending = resolvedItems.length < items.length;
+
+	$: if (chosenItem) {
 		isActive = false;
-		value = item.text;
-		selectedItem = item;
-		selectedId = item.id;
+		searchPhrase = chosenItem.text;
+		chosenId = chosenItem.id;
+	} else {
+		searchPhrase = '';
+		chosenId = undefined;
 	}
 
-	function onSubmit() {
-		// if inactive, activate by taking focus
-		if (!isActive) {
-			input.focus();
-
-			return;
-		}
-
-		// run blur if onBlur scheduled one/haven't timed out
-		runScheduledBlur();
+	// prevents svelte from complaining about currItems & isPending circular dep
+	function getPlaceholderItem(isPending: boolean) {
+		return isPending ? LOADING_ITEM : NO_ITEMS_ITEM;
 	}
 
-	let isBlurScheduled = false;
+	let prevSearchPhrase = searchPhrase;
+	function isNewSearchPhrase() {
+		if (searchPhrase !== prevSearchPhrase) {
+			prevSearchPhrase = searchPhrase;
 
-	function scheduleBlur() {
-		isBlurScheduled = true;
-	}
-
-	function runScheduledBlur() {
-		if (!isBlurScheduled) {
-			return;
+			return true;
 		}
 
-		isActive = false;
-		isBlurScheduled = false;
-
-		if (value === '' && selectedItem != null) {
-			onSelect(selectedItem);
-		}
+		return false;
 	}
 </script>
 
 <div type="<Dropdown>" class="component">
 	<Input
 		bind:isActive
-		bind:buttonProps
 		{label}
-		on:submit={onSubmit}
-		bind:this={input}
-		bind:value
+		bind:value={searchPhrase}
 		{width}
 		{height}
-		isMovingLabel={false}
+		on:focus={(e) => {
+			// without this explicit `isActive = true`,
+			// the bind seems to fail onfocus
+			isActive = true;
+			isBlurCancelled = false;
+
+			if (isNewSearchPhrase()) {
+				// @ts-expect-error no ts zone
+				e.target?.setSelectionRange(0, searchPhrase.length);
+			}
+		}}
+		on:blur={(e) => {
+			if (isBlurCancelled) {
+				e.stopImmediatePropagation();
+				isBlurCancelled = false;
+			}
+
+			if (isNewSearchPhrase()) {
+				// @ts-expect-error no ts zone
+				e.target?.setSelectionRange(0, searchPhrase.length);
+			}
+		}}
+		hasMovingLabel={false}
 		{...$$restProps}
-	/>
+	>
+		<div class="buttons" slot="button" let:focus>
+			<SvgButton
+				backgroundColour="--colour-background-secondary"
+				hoverBackgroundColour="--colour-background-primary"
+				isShaded={false}
+				svg={clear}
+				on:click={() => {
+					chosenItem = undefined;
+					isBlurCancelled = false;
+					focus();
+				}}
+				on:mousedown={() => {
+					isBlurCancelled = true;
+				}}
+			/>
+			<SvgButton
+				isShaded={false}
+				svg={isActive ? keyboard_arrow_up : keyboard_arrow_down}
+				on:click={() => {
+					isActive = !isActive;
+					isBlurCancelled = false;
+				}}
+				on:mousedown={() => {
+					isBlurCancelled = true;
+				}}
+				on:touchstart={() => {
+					isBlurCancelled = true;
+				}}
+			/>
+		</div>
+	</Input>
 	<div
 		class="items"
 		style="
@@ -173,13 +184,12 @@
 					--pointer-events: {isActive ? 'unset' : 'none'};
 				"
 			>
-				{#each currentItems as item, i}
+				{#each currItems as item, i}
 					<div
 						class="item"
 						in:dropIn={{ delay: i * 50 }}
 						out:dropOut={{
 							delay: i * 50,
-							// easing: easings.expoOut,
 							duration: 100,
 						}}
 					>
@@ -192,11 +202,28 @@
 							rippleColour={item.rippleColour}
 							textColour={item.textColour}
 							on:click={() => {
-								onSelect(item);
+								chosenItem = item;
 							}}
 							isDisabled={item.label}
 						>
-							{item.text}
+							{#if i in currIndexOfSearchPhrases}
+								{item.text.substring(
+									0,
+									currIndexOfSearchPhrases[i],
+								)}<u
+									>{item.text.substring(
+										currIndexOfSearchPhrases[i],
+										currIndexOfSearchPhrases[i] +
+											searchPhrase.length,
+									)}</u
+								>{item.text.substring(
+									currIndexOfSearchPhrases[i] +
+										searchPhrase.length,
+									item.text.length,
+								)}
+							{:else}
+								{item.text}
+							{/if}
 						</SvgButton>
 					</div>
 				{/each}
@@ -206,6 +233,15 @@
 </div>
 
 <style lang="postcss">
+	.component {
+		background: var(--colour-background-secondary);
+		border-radius: var(--roundness);
+	}
+
+	.buttons {
+		display: flex;
+	}
+
 	.items {
 		height: 0;
 		width: 100%;
@@ -224,7 +260,7 @@
 			pointer-events: var(--pointer-events);
 
 			& > * {
-				margin-top: 8px;
+				margin-top: 2px;
 			}
 		}
 	}

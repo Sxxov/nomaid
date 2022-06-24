@@ -4,7 +4,7 @@
 	import { CssUtility } from '../../resources/utilities';
 	import type { Css } from '../../resources/utilities';
 	import Spacer from './Spacer.svelte';
-	import { Axis } from './common/enums/Axis';
+	import { Axes } from './common/enums/Axes';
 
 	const enum Coords {
 		x = 50,
@@ -27,7 +27,9 @@
 	export let height: Css = 'max(calc(var(--border-radius) * 2), 56px)';
 	export let isText = true;
 	export let textAlign: Css = 'center';
-	export let padding: Css = '16px max(var(--border-radius), 24px)';
+	export let padding: Css = $$slots.default
+		? '16px max(var(--border-radius), 24px)'
+		: '16px';
 	export let overflow = '';
 	export let isIconSpacerEnabledOverride: boolean | null = null;
 	export let isShaded = true;
@@ -122,20 +124,16 @@
 		--transition: {isAnimated ? transition : 'unset'};
 		--overflow: {overflow};
 	"
+	on:mouseover
 	on:mouseover={() => {
-		dispatch('mouseover');
 		isHovered = true;
 	}}
-	on:focus={() => {
-		dispatch('focus');
-	}}
+	on:mouseout
 	on:mouseout={() => {
-		dispatch('mouseout');
 		isHovered = false;
 	}}
-	on:blur={() => {
-		dispatch('blur');
-	}}
+	on:focus
+	on:blur
 >
 	{#if $$slots.background}
 		<div class="background">
@@ -170,15 +168,17 @@
 			--text-align: {textAlign};
 			--mix-blend-mode: {isTextInvertedAgainstBackground ? 'difference' : 'unset'};
 		"
-		on:click={() => {
-			dispatch('click');
-		}}
+		on:click
 		on:focus={() => {
 			isFocused = true;
 		}}
 		on:blur={() => {
 			isFocused = false;
 		}}
+		on:touchstart|passive
+		on:mousedown
+		on:touchend|passive
+		on:mouseup
 		on:touchstart|passive={onDown}
 		on:mousedown={onDown}
 		on:touchend={onUp}
@@ -188,7 +188,7 @@
 		<span class="content">
 			<slot name="icon" />
 			{#if isIconSpacerEnabledOverride == null ? $$slots.icon && $$slots.default : isIconSpacerEnabledOverride}
-				<Spacer width={8} direction={Axis.HORIZONTAL} />
+				<Spacer width={8} direction={Axes.HORIZONTAL} />
 			{/if}
 			{#if isText}
 				<p>
@@ -230,12 +230,10 @@
 
 <style lang="postcss">
 	.component {
-		@apply shadow-none;
+		box-shadow: var(--shadow-none);
 
 		height: var(--height);
 		width: var(--width);
-
-		transform: translateX(0px);
 
 		border: var(--border);
 		border-radius: var(--border-radius);
@@ -243,17 +241,12 @@
 		overflow: var(--overflow);
 
 		&.pressed.shaded {
-			@apply shadow-xl;
+			box-shadow: var(--shadow-xl);
 		}
 
 		&,
 		& * {
-			transition: var(--transition),
-				box-shadow 0.2s theme('ease.slowSlow');
-		}
-
-		&:hover {
-			transform: translateY(-4px);
+			transition: var(--transition), box-shadow 0.2s var(--ease-slow-slow);
 		}
 	}
 
@@ -276,6 +269,7 @@
 
 		&:disabled {
 			opacity: 0.5;
+			cursor: not-allowed;
 		}
 
 		&:hover,
@@ -288,7 +282,7 @@
 		}
 
 		&:active {
-			@apply shadow-inner;
+			box-shadow: var(--shadow-inner);
 		}
 
 		& * {

@@ -44,8 +44,8 @@
 
 <style lang="postcss">
 	.component {
-		@apply h-auto
-			w-auto
-			flex;
+		height: auto;
+		width: auto;
+		display: flex;
 	}
 </style>

@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 const postcssImport = require('postcss-import');
-// @ts-expect-error
 const postcssImportUrl = require('postcss-import-url');
-const tailwindcssNesting = require('tailwindcss/nesting');
+const postcssNested = require('postcss-nested');
 const fs = require('fs');
 const pathTool = require('path');
-const tailwindcss = require('tailwindcss');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const { postcssFontGrabber } = require('postcss-font-grabber');
@@ -80,12 +78,10 @@ module.exports = {
 				}
 			},
 		},
-		// write plugin to copy all srcs to assets
 		postcssImportUrl({
 			modernBrowser: true,
 		}),
-		tailwindcssNesting(),
-		tailwindcss(),
+		postcssNested(),
 		autoprefixer(),
 		production &&
 			cssnano({

@@ -1,7 +1,7 @@
 import { Store } from '../blocks/store';
 import type { TStorify } from '../blocks/store';
-import type { ToastItem } from '../../components/composable/toast/ToastItem';
-import type { ToppingItem } from '../../components/composable/hamburger/ToppingItem';
+import type { Toast } from '../../components/composable/toast/Toast';
+import type { Topping } from '../../components/composable/hamburger/Topping';
 import { ArrayStore } from '../blocks/store/stores/ArrayStore';
 
 function contextual(target: typeof Contexts, name: keyof typeof Ctx.s): void {
@@ -36,6 +36,6 @@ export const Ctx: {
 };
 
 export class Contexts {
-	@contextual public static toasts = new ArrayStore<ToastItem>();
-	@contextual public static toppings = new ArrayStore<ToppingItem>();
+	@contextual public static toasts = new ArrayStore<Toast>();
+	@contextual public static toppings = new ArrayStore<Topping>();
 }

@@ -1,4 +1,4 @@
-import { ToppingItem } from '../../components/composable/hamburger/ToppingItem';
+import { Topping } from '../../components/composable/hamburger/Topping';
 import { AbstractHydrator } from './AbstractHydrator';
 import {
 	home,
@@ -7,9 +7,9 @@ import {
 	call,
 } from '!i/twotone::home,face,visibility,call';
 
-export class ToppingsHydrator extends AbstractHydrator<ToppingItem[]> {
+export class ToppingsHydrator extends AbstractHydrator<Topping[]> {
 	constructor(
-		out: ToppingItem[],
+		out: Topping[],
 		private goto: (href: string, opts?: any) => Promise<void>,
 	) {
 		super(out);
@@ -17,28 +17,28 @@ export class ToppingsHydrator extends AbstractHydrator<ToppingItem[]> {
 
 	/** @stub */
 	public async hydrate() {
-		this.out[0] = ToppingItem.from({
+		this.out[0] = Topping.from({
 			svg: home,
 			name: 'Home'.toUpperCase(),
 			action: () => {
 				void this.goto('/');
 			},
 		});
-		this.out[1] = ToppingItem.from({
+		this.out[1] = Topping.from({
 			svg: face,
 			name: 'About'.toUpperCase(),
 			action: () => {
 				void this.goto('/about');
 			},
 		});
-		this.out[2] = ToppingItem.from({
+		this.out[2] = Topping.from({
 			svg: visibility,
 			name: 'Portfolio'.toUpperCase(),
 			action: () => {
 				void this.goto('/portfolio');
 			},
 		});
-		this.out[3] = ToppingItem.from({
+		this.out[3] = Topping.from({
 			svg: call,
 			name: 'Contact'.toUpperCase(),
 			action: () => {

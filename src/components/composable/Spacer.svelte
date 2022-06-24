@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { CssUtility } from '../../resources/utilities';
 	import type { Css } from '../../resources/utilities';
-	import { Axis } from './common/enums/Axis';
+	import { Axes } from './common/enums/Axes';
 
 	export let height: Css = 24;
 	export let width: Css = 24;
-	export let direction: Axis = Axis.VERTICAL;
+	export let direction: Axes = Axes.VERTICAL;
 </script>
 
 <div
 	type="<Spacer>"
 	class="component"
 	style="
-		--height: calc({CssUtility.parse(direction === Axis.VERTICAL ? height : 0)});
-		--width: calc({CssUtility.parse(direction === Axis.HORIZONTAL ? width : 0)});
+		--height: calc({CssUtility.parse(direction === Axes.VERTICAL ? height : 0)});
+		--width: calc({CssUtility.parse(direction === Axes.HORIZONTAL ? width : 0)});
 "
 />
 

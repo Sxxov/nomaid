@@ -1,50 +1,39 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import Button from '../Button.svelte';
 	import { CssUtility } from '../../../resources/utilities';
 	import type { Css } from '../../../resources/utilities';
 
-	export let svgHeight = '1rem';
-	export let svgWidth = '1rem';
+	export let svgHeight: Css = '16px';
+	export let svgWidth: Css = '24px';
 
-	export let src = '';
-	export let svg: string | Promise<string> | Promise<unknown> = '';
+	export let svg = '';
 	export let svgColour: Css = '--colour-accent-primary';
 	export let hoverSvgColour: Css = svgColour;
 	export let isClickable = true;
 
-	const dispatch = createEventDispatcher();
-
-	let div: HTMLDivElement;
-
-	$: if (src) {
-		svg = (async () => (await fetch(src)).text())();
-	}
-
-	$: if ((svg as Promise<string>).then) {
-		void (svg as Promise<string>).then((resolved) => {
-			svg = (resolved as any)?.default ?? resolved;
-		});
-	}
-
-	$: if (div && typeof svg === 'string') {
-		div.innerHTML = svg ?? '';
-
-		const svgElem = div.children[0] as SVGElement;
-
-		if (svgElem) {
-			svgElem.style.height = CssUtility.parse(svgHeight);
-			svgElem.style.width = CssUtility.parse(svgWidth);
-		}
-	}
+	$: sizeCorrectedSvg = svg
+		.replace(/(?<=height=")\s*.*?\s*(?=")/, CssUtility.parse(svgHeight))
+		.replace(/(?<=width=")\s*.*?\s*(?=")/, CssUtility.parse(svgWidth));
 </script>
 
 <div type="<SvgButton>" class="component">
 	{#if isClickable}
 		<Button
 			isIconSpacerEnabledOverride={Boolean($$slots.default)}
+			padding={$$slots.default
+				? '16px max(var(--border-radius), 24px)'
+				: '16px'}
 			{...$$restProps}
-			on:click={() => dispatch('click')}
+			on:blur
+			on:click
+			on:focus
+			on:mousedown
+			on:mouseout
+			on:mouseover
+			on:mouseup
+			on:touchend
+			on:touchstart
 			let:isAnimated
 			let:isDisabled
 			let:isFocused
@@ -52,22 +41,24 @@
 		>
 			<div
 				slot="icon"
-				bind:this={div}
 				class="icon"
 				style="
 					--colour-svg: {CssUtility.parse(isHovered ? hoverSvgColour : svgColour)};
 				"
-			/>
+			>
+				{@html sizeCorrectedSvg}
+			</div>
 			<slot {isHovered} {isDisabled} {isAnimated} {isFocused} />
 		</Button>
 	{:else}
 		<div
-			bind:this={div}
 			class="icon"
 			style="
 				--colour-svg: {CssUtility.parse(svgColour)};
 			"
-		/>
+		>
+			{@html sizeCorrectedSvg}
+		</div>
 	{/if}
 </div>
 
@@ -78,6 +69,9 @@
 
 	.icon {
 		display: contents;
+
+		/* required to prevent bug in button, where it fires a mousedown but not a click, sometimes */
+		pointer-events: none;
 
 		fill: var(--colour-svg);
 

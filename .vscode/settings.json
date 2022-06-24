@@ -3,13 +3,16 @@
 		"editor.formatOnSave": true,
 		"editor.defaultFormatter": "svelte.svelte-vscode",
 	},
+	"[postcss]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "stylelint.vscode-stylelint",
+	},
 	"svelte.plugin.svelte.format.enable": true,
 	"svelte.plugin.svelte.defaultScriptLanguage": "ts",
 	"svelte.plugin.svelte.useNewTransformation": true,
 	"editor.colorDecorators": true,
-	"tailwindCSS.emmetCompletions": true,
 	"typescript.tsdk": "node_modules\\typescript\\lib",
 	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
+		"source.fixAll.eslint": true,
 	},
 }

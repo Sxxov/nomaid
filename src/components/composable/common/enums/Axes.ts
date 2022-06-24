@@ -1,4 +1,4 @@
-export const enum Axis {
+export const enum Axes {
 	X = 0,
 	HORIZONTAL = 0,
 

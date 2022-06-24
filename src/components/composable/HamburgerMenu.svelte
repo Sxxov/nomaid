@@ -6,11 +6,11 @@
 	import ValueAnimation from '../composable/animator/animations/ValueAnimation.svelte';
 	import FrameAnimator from '../composable/animator/animators/FrameAnimator.svelte';
 	import Button from '../composable/Button.svelte';
-	import type { ToppingItem } from './hamburger/ToppingItem';
+	import type { Topping } from './hamburger/Topping';
 
 	export let prefix = '';
 	export let suffix = '';
-	export let toppings: ToppingItem[] = [];
+	export let toppings: Topping[] = [];
 	export let width = 200;
 	export let isActive = false;
 	export let currentPageIndex = -1;
@@ -172,9 +172,9 @@
 
 <style lang="postcss">
 	.overlay {
-		@apply h-screen
-			w-screen
-			fixed;
+		position: fixed;
+		height: 100vh;
+		width: 100vw;
 
 		background: var(--colour-background-primary);
 
@@ -185,7 +185,7 @@
 			left: 0;
 
 			clip-path: inset(0 100% 0 0);
-			transition: clip-path 0.8s theme('ease.slowSlow');
+			transition: clip-path 0.8s var(--ease-slow-slow);
 
 			.active > & {
 				clip-path: inset(0 50% 0 0);
@@ -197,7 +197,7 @@
 			left: 0;
 
 			clip-path: inset(0 0 100% 0);
-			transition: clip-path 0.3s theme('ease.fastSlow');
+			transition: clip-path 0.3s var(--ease-fast-slow);
 
 			.active > & {
 				clip-path: inset(0 0 50.05% 0);
@@ -209,7 +209,7 @@
 			right: 0;
 
 			clip-path: inset(0 0 0 100%);
-			transition: clip-path 0.8s theme('ease.fastSlow');
+			transition: clip-path 0.8s var(--ease-fast-slow);
 
 			.active > & {
 				clip-path: inset(0 0 0 50%);
@@ -221,7 +221,7 @@
 			left: 0;
 
 			clip-path: inset(100% 0 0 0);
-			transition: clip-path 0.3s theme('ease.fastSlow');
+			transition: clip-path 0.3s var(--ease-fast-slow);
 
 			.active > & {
 				clip-path: inset(50.05% 0 0 0);
@@ -255,8 +255,8 @@
 		height: 56px;
 		grid-row: var(--grid-row);
 
-		transition: width 0.5s theme('ease.slowSlow'),
-			height 0.5s theme('ease.fastSlow');
+		transition: width 0.5s var(--ease-slow-slow),
+			height 0.5s var(--ease-fast-slow);
 
 		pointer-events: auto;
 

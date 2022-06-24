@@ -1,93 +1,80 @@
-@layer utilities {
-	.font-display {
-		font-family: theme('fontFamily.display');
-	}
+.font-display {
+	font-family: var(--font-family-display);
+}
 
-	.a {
-		font-weight: 900;
-	}
+.sentencecase {
+	text-transform: lowercase;
 
-	.sentencecase {
-		text-transform: lowercase;
-
-		&:first-letter {
-			text-transform: capitalize;
-		}
+	&:first-letter {
+		text-transform: capitalize;
 	}
 }
 
-@layer base {
-	h1 {
-		@apply
-			text-accent-primary
-			font-display
-			font-thin;
+h1 {
+	color: var(--colour-accent-primary);
+	font-family: var(--font-family-display);
+	font-weight: 100;
 
-		font-size: 4rem;
-		margin-bottom: .7em;
-		line-height: .8;
-	}
+	font-size: 4rem;
+	margin-bottom: .7em;
+	line-height: .8;
+}
 
-	h2 {
-		@apply
-			text-accent-primary
-			font-display
-			font-light;
+h2 {
+	color: var(--colour-accent-primary);
+	font-family: var(--font-family-display);
+	font-weight: 300;
 
-		font-size: 3rem;
-		margin-bottom: .7em;
-		line-height: .8;
-	}
+	font-size: 3rem;
+	margin-bottom: .7em;
+	line-height: .8;
+}
 
-	h3 {
-		@apply
-			text-accent-primary
-			font-display
-			font-bold
-			uppercase;
+h3 {
+	color: var(--colour-accent-primary);
+	font-family: var(--font-family-display);
+	font-weight: 700;
+	text-transform: uppercase;
 
-		font-size: 2.5rem;
-		margin-bottom: .7em;
-		line-height: .8;
-	}
+	font-size: 2.5rem;
+	margin-bottom: .7em;
+	line-height: .8;
+}
 
-	h4 {
-		@apply
-			text-primary
-			font-display
-			font-bold
-			uppercase;
+h4 {
+	color: var(--colour-text-primary);
+	font-family: var(--font-family-display);
+	font-weight: 700;
+	text-transform: uppercase;
 
-		font-size: 2.26rem;
-		margin-bottom: .7em;
-		line-height: .8;
-	}
+	font-size: 2.26rem;
+	margin-bottom: .7em;
+	line-height: .8;
+}
 
-	h5 {
-		@apply
-			text-primary
-			font-sans
-			font-bold
-			uppercase;
+h5 {
+	color: var(--colour-text-primary);
+	font-family: var(--font-family-sans);
+	font-weight: 700;
+	text-transform: uppercase;
 
-		font-size: 1.6rem;
-		margin-bottom: .7em;
-		line-height: 1;
-	}
+	font-size: 1.6rem;
+	margin-bottom: .7em;
+	line-height: 1;
+}
 
-	h6 {
-		@apply
-			text-accent-primary
-			font-sans
-			uppercase;
+h6 {
+	color: var(--colour-text-primary);
+	font-family: var(--font-family-sans);
+	font-weight: 500;
+	text-transform: uppercase;
 
-		font-size: 1.6rem;
-		margin-bottom: .7em;
-		line-height: 1;
-	}
+	font-size: 1.6rem;
+	margin-bottom: .7em;
+	line-height: 1;
+}
 
-	p {
-		@apply text-primary;
-		@apply font-sans;
-	}
+p, input, textarea, label {
+	color: var(--colour-text-primary);
+	font-family: var(--font-family-sans);
 }

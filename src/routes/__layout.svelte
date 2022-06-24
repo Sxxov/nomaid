@@ -11,9 +11,8 @@
 	import '../global.pcss';
 	import { onMount } from 'svelte';
 	import Toast from '../components/composable/Toast.svelte';
-	import { Ctx } from '../core/ctx';
+	import { Ctx } from '../core/ctx/Ctx';
 	import 'kursor/dist/kursor.css';
-	import { Tailwinder } from '../core/tailwinder/Tailwinder';
 	import favicon32 from '!p::../assets/favi/favicon-32x32.png?png';
 	import favicon16 from '!p::../assets/favi/favicon-16x16.png?png';
 
@@ -22,22 +21,11 @@
 
 	onMount(() => {
 		window.addEventListener('sveltekit:start', async () => {
-			const theme =
-				localStorage.getItem('theme') ??
-				(window.matchMedia('(prefers-color-scheme: dark)').matches
-					? 'dark'
-					: 'light');
-
-			document.documentElement.classList.add(theme);
-
-			Tailwinder.injectThemeAsCssVariables();
-
 			const { default: SmoothScroll } = await import(
 				'smoothscroll-for-websites'
 			);
 			const { default: Kursor } = await import('kursor');
 
-			// eslint-disable-next-line new-cap
 			SmoothScroll({
 				animationTime: 500,
 				touchpadSupport: false,
@@ -93,10 +81,11 @@
 
 <style lang="postcss">
 	:global(body) {
+		margin: 0;
 		overscroll-behavior-y: contain;
 	}
 
 	main {
-		background: #451973;
+		background: var(--colour-background-primary);
 	}
 </style>

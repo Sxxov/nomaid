@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Ctx } from '../../core/ctx';
+	import { Ctx } from '../../core/ctx/Ctx';
 	import LottieToggleButton from '../composable/buttons/LottieToggleButton.svelte';
 	import HamburgerMenu from '../composable/HamburgerMenu.svelte';
 	import Logo from './Logo.svelte';
@@ -31,15 +31,19 @@
 
 <style lang="postcss">
 	.content {
-		@apply h-full
-			w-full
-			fixed
-			top-0
-			left-0
-			grid
-			z-10
-			pointer-events-none;
+		position: fixed;
 
+		height: 100%;
+		width: 100%;
+
+		top: 0;
+		left: 0;
+
+		z-index: 10;
+
+		pointer-events: none;
+
+		display: grid;
 		grid-template-areas:
 			'logo _ hamburger'
 			'__ __ __'
@@ -47,10 +51,10 @@
 		grid-template-columns: 56px 1fr auto;
 		grid-template-rows: auto 1fr auto;
 
-		padding: theme('padding');
+		padding: var(--padding);
 
 		& * {
-			@apply pointer-events-auto;
+			pointer-events: auto;
 		}
 
 		& .hamburger {
@@ -59,7 +63,7 @@
 	}
 
 	.hamburger {
-		@apply relative
-			z-10;
+		position: relative;
+		z-index: 10;
 	}
 </style>

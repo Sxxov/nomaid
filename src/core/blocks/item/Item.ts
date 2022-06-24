@@ -18,6 +18,11 @@ export type TItemOptions<T extends abstract new (...args: any[]) => any> = {
 	[Q in keyof TWritableProps<InstanceType<T>>]: InstanceType<T>[Q];
 };
 
+/**
+ * @deprecated The use of `Item` as a base class is no longer recommended due to
+ *   its limitations with default values & expressiveness. New classes should
+ *   consider extending `Thing` instead
+ */
 export class Item {
 	/** @deprecated You're probably looking for `Item.from()` */
 	constructor() {}

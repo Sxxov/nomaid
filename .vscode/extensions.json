@@ -2,7 +2,9 @@
     "recommendations": [
         "dbaeumer.vscode-eslint",
         "svelte.svelte-vscode",
-        "bradlc.vscode-tailwindcss",
-        "csstools.postcss"
+        "vunguyentuan.vscode-css-variables",
+        "vunguyentuan.vscode-postcss",
+        "stylelint.vscode-stylelint",
+        "ronilaukkarinen.vscode-stylefmt"
     ],
 }

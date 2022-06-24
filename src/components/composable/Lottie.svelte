@@ -87,7 +87,7 @@
 	.content {
 		opacity: 1;
 
-		transition: opacity 0.3s theme('ease.slowSlow');
+		transition: opacity 0.3s var(--ease-slow-slow);
 
 		fill: var(--fill);
 		stroke: var(--stroke);

@@ -1,4 +1,3 @@
-import { Tailwinder } from '../../core/tailwinder/Tailwinder';
 import { IncorrectUsageError, UnexpectedValueError } from '../errors';
 import { WindowUtility } from './WindowUtility';
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,8 +14,6 @@ export class CssUtility {
 				return `${value}px`;
 			case (value as string).startsWith('--'):
 				return `var(${value})`;
-			case (value as string).startsWith('.'):
-				return String(Tailwinder.getThemeProp(value as string));
 			case this.isNumber(value):
 				return `${value}px`;
 			default:
