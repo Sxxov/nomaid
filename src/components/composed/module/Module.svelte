@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import {
 		dropIn,
 		dropOut,
@@ -13,6 +14,8 @@
 	export let svg: string;
 	export let name: string;
 
+	let componentDiv: HTMLDivElement;
+
 	const dropOutOnlyOnY = (...args: Parameters<typeof dropOut>) =>
 		currAxis === Axes.Y ? dropOut(...args) : noop;
 
@@ -23,6 +26,13 @@
 	let clientWidth: number;
 
 	$: currAxis = clientHeight > clientWidth ? Axes.Y : Axes.X;
+
+	onMount(() => {
+		requestAnimationFrame(() => {
+			// force sync layout & set clientHeight, clientWidth
+			({ clientHeight, clientWidth } = componentDiv);
+		});
+	});
 </script>
 
 <div
@@ -38,6 +48,7 @@
 	"
 	bind:clientHeight
 	bind:clientWidth
+	bind:this={componentDiv}
 >
 	<div
 		class="name"
