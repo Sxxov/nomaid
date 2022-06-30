@@ -17,14 +17,14 @@
 	import Module from '../components/composed/module/Module.svelte';
 	import ModuleItem from '../components/composed/module/ModuleItem.svelte';
 
-	// eslint-disable-next-line prefer-const
-	let i = 0;
+	// // eslint-disable-next-line prefer-const
+	// let i = 0;
 
-	Ctx.toasts.push(
-		Toast.from({
-			text: 'yoo',
-		}),
-	);
+	// Ctx.toasts.push(
+	// 	Toast.from({
+	// 		text: 'yoo',
+	// 	}),
+	// );
 </script>
 
 <div type="/index" class="component">
