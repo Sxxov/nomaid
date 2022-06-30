@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { raf } from 'svelte/internal';
 	import { CssUtility, type Css } from '../../../resources/utilities';
 	import { Axes } from '../../composable/common/enums/Axes';
 	import type { IResResContext } from './IResResContext';
@@ -41,12 +42,12 @@
 <div
 	type="<ResResList>"
 	class="component"
+	style="
+	--height: {CssUtility.parse(height)};
+	--width: {CssUtility.parse(width)};
+	"
 	bind:clientHeight
 	bind:clientWidth
-	style="
-		--height: {CssUtility.parse(height)};
-		--width: {CssUtility.parse(width)};
-	"
 >
 	<div
 		class="wrapper"
@@ -55,6 +56,25 @@
 			--width: {currAxis === Axes.X ? `${clientWidth}px` : '100%'};
 			--overflow: {currAxis === Axes.Y ? 'hidden scroll' : 'scroll hidden'};
 		"
+		on:wheel={(e) => {
+			if (currAxis === Axes.X) {
+				let curr = 0;
+				const duration = 10;
+				const { currentTarget, deltaY: dest } = e;
+				const delta = dest / duration;
+
+				window.requestAnimationFrame(function raf() {
+					// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+					currentTarget.scrollLeft += delta;
+					curr += delta;
+
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+					if (Math.abs(curr) < Math.abs(dest)) {
+						window.requestAnimationFrame(raf);
+					}
+				});
+			}
+		}}
 		on:scroll={(e) => {
 			position =
 				(currAxis === Axes.Y
