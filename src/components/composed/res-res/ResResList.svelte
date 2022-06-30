@@ -58,6 +58,8 @@
 		"
 		on:wheel={(e) => {
 			if (currAxis === Axes.X) {
+				e.preventDefault();
+
 				let curr = 0;
 				const duration = 10;
 				const { currentTarget, deltaY: dest } = e;
