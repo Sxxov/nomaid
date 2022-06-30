@@ -3,7 +3,7 @@
 	import SvgButton from '../components/composable/buttons/SvgButton.svelte';
 	import Dropdown from '../components/composable/Dropdown.svelte';
 	import { Dropdown as D } from '../components/composable/dropdown/Dropdown';
-	import { done } from '!i/twotone::done';
+	import { done, view_module } from '!i/twotone::done, view_module';
 	import { dropIn } from '../core/transitioner/Transitioner';
 	import { onMount } from 'svelte';
 	import Hint from '../components/composable/Hint.svelte';
@@ -11,6 +11,11 @@
 	import Input from '../components/composable/Input.svelte';
 	import { Ctx } from '../core/ctx/Ctx';
 	import { Toast } from '../components/composable/toast/Toast';
+	import ResResList from '../components/composed/res-res/ResResList.svelte';
+	import ResResItem from '../components/composed/res-res/ResResItem.svelte';
+	import ResResItemContent from '../components/composed/res-res/ResResItemContent.svelte';
+	import Module from '../components/composed/module/Module.svelte';
+	import ModuleItem from '../components/composed/module/ModuleItem.svelte';
 
 	// eslint-disable-next-line prefer-const
 	let i = 0;
@@ -23,7 +28,7 @@
 </script>
 
 <div type="/index" class="component">
-	<div in:dropIn={{ delay: ++i * 100 }}>
+	<!-- <div in:dropIn={{ delay: ++i * 100 }}>
 		<Button>Button</Button>
 	</div>
 	<div in:dropIn={{ delay: ++i * 100 }}>
@@ -67,11 +72,32 @@
 	</div>
 	<div in:dropIn={{ delay: ++i * 100 }}>
 		<Hint level={Levels.WARN}>hi</Hint>
-	</div>
+	</div> -->
 	<!-- <div in:dropIn={{ delay: ++i * 100 }}>
 		<Input />
 	</div> -->
+	<ResResList height="100vh" itemCount={100} let:ctx>
+		{#each Array(100).fill(undefined) as _, i}
+			<ResResItem {i} {ctx}>
+				<Module svg={view_module} name={`module no. ${i}`}>
+					<div class="items" slot="hooks">
+						<ModuleItem />
+						<ModuleItem />
+					</div>
+					<div class="items" slot="actions">
+						<ModuleItem />
+						<ModuleItem />
+					</div>
+				</Module>
+			</ResResItem>
+		{/each}
+	</ResResList>
 </div>
 
 <style lang="postcss">
+	.items {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
 </style>
